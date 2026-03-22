@@ -1,58 +1,87 @@
 # IM + Windows 自动化项目
 
-这个项目允许用户通过即时通讯工具（飞书、钉钉、微信、QQ）向 AI 发送指令，AI 将解析这些指令并调用 Windows-MCP 执行相应的 Windows 系统操作，然后将执行结果返回给用户。
+通过 IM（飞书/钉钉/微信/QQ）发送消息，AI 解析指令并调用 Windows-MCP 执行 Windows 操作。
+
+## 功能特点
+
+- ✅ **个人微信支持** - 支持 wechaty/ntchat/wechatbot-webhook
+- ✅ **无需 Python 环境** - 提供 EXE 打包方案
+- ✅ **多 IM 平台** - 飞书、钉钉、微信、QQ
+- ✅ **Windows 自动化** - 文件操作、应用控制、键盘鼠标模拟
 
 ## 技术栈
 
-- **Windows-MCP**: 用于控制 Windows 系统的 MCP (Model Context Protocol) 服务器
-- **IM 集成**: 支持飞书、钉钉、微信、QQ 作为交互入口
-
-## 项目架构
-
-本项目采用模块化设计，主要包含以下组件：
-
-1. **指令解析 Agent**: 负责理解用户在 IM 中发送的自然语言指令
-2. **IM 适配器**: 为不同 IM 平台提供统一的接口
-3. **Windows-MCP 客户端**: 与 Windows-MCP 服务器通信，执行系统操作
+| 组件 | 说明 |
+|------|------|
+| **Windows-MCP** | Windows 系统控制 (4.8k ⭐) |
+| **wechaty** | 个人微信 SDK (22.6k ⭐) |
+| **wechatbot-webhook** | HTTP 接口微信机器人 (2.1k ⭐) |
 
 ## 快速开始
 
-### 1. 克隆项目
+### 方式一：直接使用（需要 Python）
 
 ```bash
 git clone https://github.com/shangguanyongsheng/im-windows-automation.git
 cd im-windows-automation
-```
-
-### 2. 安装依赖
-
-```bash
 pip install -r requirements.txt
-```
-
-### 3. 配置 Windows-MCP
-
-请参考 [Windows-MCP 配置指南](docs/windows-mcp-setup.md) 设置 Windows-MCP 服务器。
-
-### 4. 配置 IM 集成
-
-根据您要使用的 IM 平台，参考对应的集成文档：
-- [飞书集成](docs/im-integration/feishu.md)
-- [钉钉集成](docs/im-integration/dingtalk.md)
-- [微信集成](docs/im-integration/wechat.md)
-- [QQ 集成](docs/im-integration/qq.md)
-
-### 5. 启动服务
-
-```bash
 python src/main.py
 ```
 
+### 方式二：EXE 运行（无需 Python）
+
+1. 下载 `IM-Windows-Automation.exe`
+2. 配置 `config/.env` 填入 API Key
+3. 双击运行
+
+### 打包成 EXE
+
+```bash
+pip install pyinstaller
+pyinstaller --onefile --name "IM-Windows-Automation" src/main.py
+```
+
+详见：[EXE 打包指南](docs/packaging.md)
+
+## 支持的 IM 平台
+
+| 平台 | 方案 | 难度 | 说明 |
+|------|------|:----:|------|
+| **个人微信** | wechatbot-webhook | ⭐ | HTTP API，推荐 |
+| **个人微信** | wechaty | ⭐⭐ | 付费 token |
+| **个人微信** | ntchat | ⭐⭐ | 免费，需 PC 微信 |
+| **企业微信** | 官方 API | ⭐ | 最稳定 |
+| **飞书** | 开放平台 API | ⭐ | 官方支持 |
+| **钉钉** | 开放平台 API | ⭐ | 官方支持 |
+| **QQ** | go-cqhttp | ⭐⭐ | 第三方方案 |
+
+## 配置文档
+
+- [Windows-MCP 配置](docs/windows-mcp-setup.md)
+- [个人微信集成](docs/im-integration/wechat.md)
+- [飞书集成](docs/im-integration/feishu.md)
+- [钉钉集成](docs/im-integration/dingtalk.md)
+- [EXE 打包](docs/packaging.md)
+
+## 使用示例
+
+在微信/飞书/钉钉发消息：
+
+```
+打开记事本
+截图
+列出桌面文件
+搜索文件 report.docx
+```
+
+AI 会自动解析并执行对应的 Windows 操作。
+
 ## 安全注意事项
 
-- 本项目不存储任何敏感信息（如 API Key）
-- 请确保在安全的网络环境中运行
-- 建议限制可执行的 Windows 操作范围，避免安全风险
+- ⚠️ 个人微信有封号风险，建议用小号测试
+- 不要频繁发送消息
+- 不要在代码中硬编码 API Key
+- 建议限制可执行的操作范围
 
 ## 许可证
 

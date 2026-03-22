@@ -1,72 +1,105 @@
-# 微信集成指南
+# 微信集成指南（支持个人微信）
 
-## 集成选项
+## 集成选项对比
 
-微信集成有多种方式，根据需求选择:
+| 方案 | 类型 | 星数 | 难度 | 稳定性 | 推荐度 |
+|------|:----:|:----:|:----:|:------:|:------:|
+| **企业微信** | 官方 API | - | ⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
+| **wechaty** | 个人微信 SDK | 22.6k | ⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐ |
+| **wechatbot-webhook** | HTTP 接口 | 2.1k | ⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ |
+| **ntchat** | PC 微信 Hook | 219 | ⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ |
 
-### 1. 企业微信 (推荐)
+---
 
-适用于企业场景，功能完整，API 稳定。
+## 1. 企业微信（推荐）
 
-**准备工作:**
-- 创建企业微信应用或机器人
-- 获取 CorpID、CorpSecret 和 AgentId
-- 配置可信域名和回调 URL
+适用于企业场景，官方支持，最稳定。
 
-**配置环境变量:**
+### 配置
+
 ```env
 WECHAT_CORP_ID=your_corp_id
 WECHAT_CORP_SECRET=your_corp_secret
 WECHAT_AGENT_ID=your_agent_id
 ```
 
-### 2. 微信公众号
+---
 
-适用于面向公众的服务。
+## 2. 个人微信 - wechatbot-webhook（推荐）
 
-**准备工作:**
-- 注册服务号（订阅号功能有限）
-- 配置服务器 URL 和 Token
-- 获取 AppID 和 AppSecret
+**GitHub**: https://github.com/danni-cool/wechatbot-webhook (2.1k ⭐)
 
-**配置环境变量:**
-```env
-WECHAT_APP_ID=your_app_id
-WECHAT_APP_SECRET=your_app_secret
-WECHAT_TOKEN=your_token
+### 特点
+- ✅ HTTP API 接口，易于集成
+- ✅ 支持 Docker 部署
+- ✅ 不需要 Python 环境
+- ⚠️ 需要扫码登录
+
+### 安装
+
+```bash
+# Docker 方式
+docker pull dannicool/wechatbot-webhook
+docker run -d -p 3000:3000 dannicool/wechatbot-webhook
 ```
 
-### 3. 个人微信 (第三方库)
+### HTTP API
 
-通过第三方库如 itchat、wxpy 等实现，但存在被封号风险。
+```bash
+# 发送消息
+curl -X POST http://localhost:3000/send \
+  -H "Content-Type: application/json" \
+  -d '{"to": "好友昵称", "content": "你好"}'
+```
 
-**注意**: 不建议在生产环境中使用个人微信自动化。
+---
 
-## 实现建议
+## 3. 个人微信 - wechaty
 
-推荐使用企业微信方案，因为:
-- 官方支持，稳定性好
-- 功能完整，支持丰富的消息类型
-- 安全性高，有完善的权限控制
-- 适合企业自动化场景
+**GitHub**: https://github.com/wechaty/wechaty (22.6k ⭐)
 
-## 安全注意事项
+### 特点
+- ✅ 跨平台
+- ⚠️ 需要付费 token
 
-- 使用 HTTPS 加密通信
-- 验证微信服务器签名
-- 不要在代码中硬编码敏感信息
-- 定期轮换密钥
-- 限制应用权限范围
+### 安装
 
-## 测试
+```bash
+pip install wechaty
+```
 
-1. 在企业微信/公众号中添加应用
-2. 向应用发送测试消息
-3. 检查日志确认消息接收和处理正常
+---
 
-## 故障排除
+## 4. 个人微信 - ntchat
 
-- **签名验证失败**: 检查 Token 和签名算法
-- **认证失败**: 检查凭证是否正确
-- **无法接收消息**: 确认服务器 URL 可访问且配置正确
-- **消息发送失败**: 检查用户是否有权限接收消息
+**GitHub**: https://github.com/billyplus/ntchat (219 ⭐)
+
+### 特点
+- ✅ 免费
+- ✅ 基于 PC 微信 Hook
+- ⚠️ 需要安装 PC 微信客户端
+
+### 安装
+
+```bash
+pip install ntchat
+```
+
+---
+
+## 推荐方案
+
+| 场景 | 推荐 |
+|------|------|
+| **企业内部使用** | 企业微信 |
+| **个人开发测试** | wechatbot-webhook |
+| **需要稳定服务** | wechaty（付费） |
+| **免费方案** | ntchat |
+
+---
+
+## ⚠️ 个人微信风险
+
+- **封号风险** - 微信对自动化检测严格
+- 建议使用小号测试
+- 不要频繁发送消息
